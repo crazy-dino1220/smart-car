@@ -63,38 +63,38 @@ void setup() // 程式初始化
         re_turn();
     }
     stop();
-    // while (!cross())
-    // {
-    //     trail();
-    // }
-    // stop();
-    // // 直走直到IR1~IR3其中一個小於450，如果有的話就停止
-    // while (!(analogRead(IR[1]) < 450 or analogRead(IR[2]) < 450 or analogRead(IR[3]) < 450))
-    // {
-    //     forward();
-    // }
-    // stop();
-    // while (!cross())
-    // {
-    //     trail();
-    // }
-    // stop();
-    // while (!(analogRead(IR[1]) < 450 or analogRead(IR[2]) < 450 or analogRead(IR[3]) < 450))
-    // {
-    //     forward();
-    // }
-    // stop();
-    // big_turn_left();
-    // delay(300);
-    // while (!(analogRead(IR[0]) > 450))
-    // {
-    //     big_turn_left();
-    // }
-    // stop();
-    // while (!cross())
-    // {
-    //     trail();
-    // }
+    while (!cross())
+    {
+        trail();
+    }
+    stop();
+    // 直走直到IR1~IR3其中一個小於450，如果有的話就停止
+    while (!(analogRead(IR[1]) < 450 or analogRead(IR[2]) < 450 or analogRead(IR[3]) < 450))
+    {
+        forward();
+    }
+    stop();
+    while (!cross())
+    {
+        trail();
+    }
+    stop();
+    while (!(analogRead(IR[1]) < 450 or analogRead(IR[2]) < 450 or analogRead(IR[3]) < 450))
+    {
+        forward();
+    }
+    stop();
+    re_turn();
+    delay(300);
+    while (!(analogRead(IR[0]) > 450))
+    {
+        re_turn();
+    }
+    stop();
+    while (!cross())
+    {
+        trail();
+    }
     // forward();
     // delay(20);
     // stop();
@@ -239,7 +239,7 @@ void stop()
 
 void re_turn()
 {
-    motor(-105, 75);
+    motor(-115, 75);
 }
 
 
