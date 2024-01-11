@@ -17,12 +17,15 @@ void motor(int, int);
 void trail();
 void small_turn_left();
 void small_turn_right();
+void mid_turn_left();
+void mid_turn_right();
 void big_turn_left();
 void big_turn_right();
 void forward();
 void stop();
 void IR_test();
 void motor_test();
+void re_turn();
 bool cross();
 /*################################程式初始化################################*/
 void setup() // 程式初始化
@@ -57,46 +60,73 @@ void setup() // 程式初始化
     // 旋轉(big_turn_left)直到IR2大於450，如果有的話就停止
     while (!(analogRead(IR[0]) > 450))
     {
-        big_turn_left();
+        re_turn();
     }
     stop();
-    while (!cross())
-    {
-        trail();
-    }
-    stop();
-    // 直走直到IR1~IR3其中一個小於450，如果有的話就停止
-    while (!(analogRead(IR[1]) < 450 or analogRead(IR[2]) < 450 or analogRead(IR[3]) < 450))
-    {
-        forward();
-    }
-    stop();
-    while (!cross())
-    {
-        trail();
-    }
-    stop();
-    while (!(analogRead(IR[1]) < 450 or analogRead(IR[2]) < 450 or analogRead(IR[3]) < 450))
-    {
-        forward();
-    }
-    stop();
-    big_turn_left();
-    delay(300);
-    while (!(analogRead(IR[0]) > 450))
-    {
-        big_turn_left();
-    }
-    stop();
-    while (!cross())
-    {
-        trail();
-    }
-    stop();
+    // while (!cross())
+    // {
+    //     trail();
+    // }
+    // stop();
+    // // 直走直到IR1~IR3其中一個小於450，如果有的話就停止
+    // while (!(analogRead(IR[1]) < 450 or analogRead(IR[2]) < 450 or analogRead(IR[3]) < 450))
+    // {
+    //     forward();
+    // }
+    // stop();
+    // while (!cross())
+    // {
+    //     trail();
+    // }
+    // stop();
+    // while (!(analogRead(IR[1]) < 450 or analogRead(IR[2]) < 450 or analogRead(IR[3]) < 450))
+    // {
+    //     forward();
+    // }
+    // stop();
+    // big_turn_left();
+    // delay(300);
+    // while (!(analogRead(IR[0]) > 450))
+    // {
+    //     big_turn_left();
+    // }
+    // stop();
+    // while (!cross())
+    // {
+    //     trail();
+    // }
+    // forward();
+    // delay(20);
+    // stop();
+    // big_turn_left();
+    // delay(100);
+    // while (!((analogRead(IR[0]) > 450) && (analogRead(IR[4]) < 450)))
+    // {
+    //     big_turn_left();
+    // }
+    // stop();
+    // while (!cross())
+    // {
+    //     trail();
+    // }
+    // // 判斷IR1~IR3有沒有同時小於450，如果有的話就停止
+    // while (!(analogRead(IR[1]) < 450 && analogRead(IR[2]) < 450 && analogRead(IR[3]) < 450))
+    // {
+    //     trail();
+    // }
+    // stop();
 
-    // 判斷IR1~IR3有沒有同時大於450，如果有的話就停止
-
-    // 判斷IR1~IR3有沒有同時大於450，如果有的話就停止
+    // // 旋轉(big_turn_left)直到IR2大於450，如果有的話就停止
+    // while (!(analogRead(IR[0]) > 450))
+    // {
+    //     big_turn_left();
+    // }
+    // stop();
+    // while (!cross())
+    // {
+    //     trail();
+    // }
+    // stop();
 }
 
 /*################################程式循環################################*/
@@ -138,14 +168,14 @@ void trail()
         {
             // while (!(analogRead(IR[2]) > 450))
             {
-                big_turn_left();
+                mid_turn_left();
             }
         }
         else if (analogRead(IR[3]) > 450)
         {
             // while (!(analogRead(IR[2]) > 450))
             {
-                big_turn_right();
+                mid_turn_right();
             }
         }
     }
@@ -175,28 +205,43 @@ void forward()
 
 void small_turn_left()
 {
-    motor(0, 120);
+    motor(80, 100);
 }
 
 void small_turn_right()
 {
-    motor(120, 0);
+    motor(100, 80);
+}
+
+void mid_turn_left()
+{
+    motor(0, 100);
+}
+void mid_turn_right()
+{
+    motor(100, 0);
 }
 
 void big_turn_left()
 {
-    motor(-120, 120);
+    motor(-100, 100);
 }
 
 void big_turn_right()
 {
-    motor(120, -120);
+    motor(100, -100);
 }
 
 void stop()
 {
     motor(0, 0);
 }
+
+void re_turn()
+{
+    motor(-105, 75);
+}
+
 
 void motor(int speedL, int speedR)
 {
