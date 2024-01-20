@@ -11,6 +11,7 @@ int mR = 6;
 int sL = 4;
 int sR = 7;
 Servo claw; // 爪子伺服馬達
+Servo arm;  // 手臂伺服馬達
 unsigned long duration_time_diff;
 /*################################函數宣告區################################*/
 void motor(int, int);
@@ -23,6 +24,7 @@ void big_turn_left();
 void big_turn_right();
 void forward();
 void stop();
+void back();
 void re_turn();
 void return_to_line();
 void trail_cross();
@@ -31,67 +33,122 @@ void my_init();
 void pickup_middle();
 void pickup_left();
 void pickup_right();
+void pick_up();
+void pick_down();
+void arm_up();
+void arm_down();
 /*################################程式初始化################################*/
 void setup() // 程式初始化
 {
-    my_init(); // 初始化
+    my_init();
+    arm_down();
+    trail_cross();
 
     pickup_middle(); // 取貨點(中)
 
-    re_turn();
+    back();
     delay(500);
+    re_turn();
+    delay(550);
     return_to_line();
+    delay(100);
 
     pickup_left(); // 取貨點(左)
 
-    re_turn();
+    back();
     delay(500);
+    re_turn();
+    delay(550);
     return_to_line();
+    delay(100);
 
     pickup_right(); // 取貨點(右)
 
-    re_turn();
+    back();
     delay(500);
+    re_turn();
+    delay(550);
     return_to_line();
+    delay(100);
 }
 
 /*################################程式循環################################*/
 void loop() // 程式循環
 {
-    // claw.write(0); // 調整爪子角度範例
+
+
     pickup_middle(); // 取貨點(中)
 
-    re_turn();
+    back();
     delay(500);
+    re_turn();
+    delay(550);
     return_to_line();
+    delay(100);
 
     pickup_left(); // 取貨點(左)
 
-    re_turn();
+    back();
     delay(500);
+    re_turn();
+    delay(550);
     return_to_line();
+    delay(100);
 
     pickup_right(); // 取貨點(右)
 
-    re_turn();
+    back();
     delay(500);
+    re_turn();
+    delay(550);
     return_to_line();
+    delay(100);
 }
 
 /*################################函數定義區################################*/
 
+void arm_up()
+{
+    arm.write(75); // 調整手臂角度範例
+}
+
+void arm_down()
+{
+    arm.write(90); // 調整手臂角度範例
+}
+
+void pick_up()
+{
+    claw.write(100); // 調整爪子角度
+}
+
+void pick_down()
+{
+    claw.write(20); // 調整爪子角度
+}
+
 void pickup_middle()
 {
     /*################前往第一個取貨點(中)################*/
-    trail_cross(); // 循跡到中間十字路口
+    pick_down();
+    // trail_cross(); // 循跡到中間十字路口
 
     // 繼續前進直到IR1~IR3全部小於450，到達取貨點
     while (!(analogRead(IR[1]) < 450 and analogRead(IR[2]) < 450 and analogRead(IR[3]) < 450))
     {
         trail();
+        if (analogRead(IR[1]) < 450 and analogRead(IR[2]) < 450 and analogRead(IR[3]) < 450)
+        {
+            stop();
+            delay(100);
+        }
     }
     stop();
+
     /*################到達第一個取貨點(中)################*/
+
+    pick_up();
+    delay(500);
 
     /*################前往卸貨點################*/
     return_to_line(); // 迴轉回到黑線上
@@ -99,14 +156,17 @@ void pickup_middle()
     trail_cross();    // 循跡到卸貨T字路口
     stop();
     /*################到達卸貨點################*/
+
+    pick_down();
 }
 
 void pickup_left()
 {
     /*################前往第二個取貨點(左)################*/
-    trail_cross();
+    pick_down();
+    // trail_cross();
     delay(100);
-    while (!((analogRead(IR[0]) > 450)))
+    while (!((analogRead(IR[1]) > 450)))
     {
         big_turn_left();
     }
@@ -121,9 +181,16 @@ void pickup_left()
     while (!((analogRead(IR[1]) < 450) and (analogRead(IR[2]) < 450) and (analogRead(IR[3]) < 450)))
     {
         trail();
+        if (analogRead(IR[1]) < 450 and analogRead(IR[2]) < 450 and analogRead(IR[3]) < 450)
+        {
+            stop();
+            delay(100);
+        }
     }
     stop();
     /*################到達第二個取貨點(左)################*/
+    pick_up();
+    delay(500);
 
     /*################前往卸貨點################*/
     return_to_line();
@@ -138,11 +205,14 @@ void pickup_left()
     trail_cross(); // 循跡到卸貨T字路口
     stop();
     /*################到達卸貨點################*/
+
+    pick_down();
 }
 
 void pickup_right()
 {
-    trail_cross();
+    pick_down();
+    // trail_cross();
     delay(100);
     while (!((analogRead(IR[4]) > 450)))
     {
@@ -150,6 +220,7 @@ void pickup_right()
     }
     stop();
     delay(100);
+
     duration_time_diff = millis();
     while (!(millis() - duration_time_diff >= 500))
     {
@@ -159,10 +230,16 @@ void pickup_right()
     while (!((analogRead(IR[1]) < 450) and (analogRead(IR[2]) < 450) and (analogRead(IR[3]) < 450)))
     {
         trail();
+        if (analogRead(IR[1]) < 450 and analogRead(IR[2]) < 450 and analogRead(IR[3]) < 450)
+        {
+            stop();
+            delay(100);
+        }
     }
     stop();
     /*################到達第三個取貨點(右)################*/
-
+    pick_up();
+    delay(500);
     /*################前往卸貨點################*/
     return_to_line();
     trail_cross();
@@ -176,6 +253,8 @@ void pickup_right()
     trail_cross(); // 循跡到卸貨T字路口
     stop();
     /*################到達卸貨點################*/
+
+    pick_down();
 }
 
 void my_init()
@@ -191,6 +270,7 @@ void my_init()
     pinMode(sR, OUTPUT);
 
     claw.attach(9);
+    arm.attach(10);
 }
 
 void return_to_line()
@@ -237,17 +317,11 @@ void trail()
     {
         if (analogRead(IR[1]) > 450)
         {
-            // while (!(analogRead(IR[2]) > 450))
-            {
-                mid_turn_left();
-            }
+            mid_turn_left();
         }
         else if (analogRead(IR[3]) > 450)
         {
-            // while (!(analogRead(IR[2]) > 450))
-            {
-                mid_turn_right();
-            }
+            mid_turn_right();
         }
     }
 }
@@ -272,6 +346,10 @@ void forward()
     motor(100, 100);
 }
 
+void back()
+{
+    motor(-120, -120);
+}
 void small_turn_left()
 {
     motor(80, 100);
@@ -284,21 +362,21 @@ void small_turn_right()
 
 void mid_turn_left()
 {
-    motor(0, 100);
+    motor(0, 110);
 }
 void mid_turn_right()
 {
-    motor(100, 0);
+    motor(110, 0);
 }
 
 void big_turn_left()
 {
-    motor(-120, 100);
+    motor(-150, 100);
 }
 
 void big_turn_right()
 {
-    motor(100, -120);
+    motor(100, -150);
 }
 
 void stop()
@@ -308,7 +386,7 @@ void stop()
 
 void re_turn()
 {
-    motor(-120, 75);
+    motor(-140, 100);
 }
 
 void motor(int speedL, int speedR)
