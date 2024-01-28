@@ -400,7 +400,7 @@ void re_turn_left()
 }
 void re_turn_right()
 {
-    motor(100, -140);
+    motor(110, -140);
 }
 
 void motor(int speedL, int speedR)
