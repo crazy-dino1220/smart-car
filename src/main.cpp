@@ -49,9 +49,9 @@ void setup() // 程式初始化
     trail_cross();
     arm_down();
 
-    // pickup_middle(); // 取貨點(中)
+    pickup_middle(); // 取貨點(中)
 
-    // back_to_center(); // 回到中心點
+    back_to_center(); // 回到中心點
 
     pickup_left(); // 取貨點(左)
 
@@ -65,9 +65,9 @@ void setup() // 程式初始化
 /*################################程式循環################################*/
 void loop() // 程式循環
 {
-    // pickup_middle(); // 取貨點(中)
+    pickup_middle(); // 取貨點(中)
 
-    // back_to_center(); // 回到中心點
+    back_to_center(); // 回到中心點
 
     pickup_left(); // 取貨點(左)
 
