@@ -69,13 +69,13 @@ void loop() // 程式循環
 
     // back_to_center(); // 回到中心點
 
-    // pickup_left(); // 取貨點(左)
+    pickup_left(); // 取貨點(左)
 
-    // back_to_center(); // 回到中心點
+    back_to_center(); // 回到中心點
 
-    // pickup_right(); // 取貨點(右)
+    pickup_right(); // 取貨點(右)
 
-    // back_to_center(); // 回到中心點
+    back_to_center(); // 回到中心點
 }
 
 /*################################函數定義區################################*/
@@ -83,7 +83,7 @@ void loop() // 程式循環
 void back_to_center()
 {
     back();
-    delay(450);
+    delay(425);
     stop();
     delay(100);
     return_to_line_left();
@@ -133,7 +133,7 @@ void pickup_middle()
 {
     /*################前往第一個取貨點(中)################*/
     pick_down_2();
-    // trail_cross(); // 循跡到中間十字路口
+    delay(100);
 
     // 繼續前進直到IR1~IR3全部小於450，到達取貨點
     while (!(analogRead(IR[1]) < 450 and analogRead(IR[2]) < 450 and analogRead(IR[3]) < 450))
@@ -157,10 +157,7 @@ void pickup_middle()
     return_to_line_left(); // 迴轉回到黑線上
     trail_cross();         // 循跡到中間十字路口
     trail_cross();         // 循跡到卸貨T字路口
-    stop();
     /*################到達卸貨點################*/
-    stop();
-    delay(100);
     pick_down();
     arm_up();
 }
@@ -169,14 +166,11 @@ void pickup_left()
 {
     /*################前往第二個取貨點(左)################*/
     pick_down_2();
-    // trail_cross();
     delay(100);
-    while (!((analogRead(IR[1]) > 450)))
-    {
-        big_turn_left();
-    }
-    stop();
+
+    return_to_line_left();
     delay(100);
+
     duration_time_diff = millis();
     while (!(millis() - duration_time_diff >= 500))
     {
@@ -200,7 +194,6 @@ void pickup_left()
     /*################前往卸貨點################*/
     return_to_line_left();
     trail_cross();
-    delay(100);
 
     return_to_line_right();
     while (!(analogRead(IR[4]) > 450))
@@ -209,10 +202,7 @@ void pickup_left()
     }
     stop();
     trail_cross(); // 循跡到卸貨T字路口
-    stop();
     /*################到達卸貨點################*/
-    stop();
-    delay(100);
     pick_down();
     arm_up();
 }
@@ -220,13 +210,9 @@ void pickup_left()
 void pickup_right()
 {
     pick_down_2();
-    // trail_cross();
     delay(100);
-    while (!((analogRead(IR[4]) > 450)))
-    {
-        big_turn_right();
-    }
-    stop();
+
+    return_to_line_right();
     delay(100);
 
     duration_time_diff = millis();
@@ -251,19 +237,15 @@ void pickup_right()
     /*################前往卸貨點################*/
     return_to_line_left();
     trail_cross();
-    delay(100);
 
-    return_to_line_right();
+    return_to_line_left();
     while (!(analogRead(IR[0]) > 450))
     {
         big_turn_left();
     }
     stop();
     trail_cross(); // 循跡到卸貨T字路口
-    stop();
     /*################到達卸貨點################*/
-    stop();
-    delay(100);
     pick_down();
     arm_up();
 }
@@ -294,7 +276,7 @@ void return_to_line_left()
 }
 void return_to_line_right()
 {
-    while (!(analogRead(IR[0]) > 450))
+    while (!(analogRead(IR[4]) > 450))
     {
         re_turn_right();
     }
@@ -320,6 +302,7 @@ void trail_cross()
         forward();
     }
     stop();
+    delay(100);
 }
 
 void trail()
@@ -413,11 +396,11 @@ void stop()
 
 void re_turn_left()
 {
-    motor(-140, 110);
+    motor(-140, 100);
 }
 void re_turn_right()
 {
-    motor(110, -140);
+    motor(100, -140);
 }
 
 void motor(int speedL, int speedR)
