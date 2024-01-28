@@ -25,8 +25,10 @@ void big_turn_right();
 void forward();
 void stop();
 void back();
-void re_turn();
-void return_to_line();
+void re_turn_left();
+void return_to_line_left();
+void re_turn_right();
+void return_to_line_right();
 void return_to_line_2();
 void trail_cross();
 bool cross();
@@ -47,34 +49,33 @@ void setup() // 程式初始化
     trail_cross();
     arm_down();
 
-    pickup_middle(); // 取貨點(中)
+    // pickup_middle(); // 取貨點(中)
 
-    back_to_center();
+    // back_to_center(); // 回到中心點
 
     pickup_left(); // 取貨點(左)
 
-    back_to_center();
+    back_to_center(); // 回到中心點
 
     pickup_right(); // 取貨點(右)
 
-    back_to_center();
+    back_to_center(); // 回到中心點
 }
 
 /*################################程式循環################################*/
 void loop() // 程式循環
 {
+    // pickup_middle(); // 取貨點(中)
 
-    pickup_middle(); // 取貨點(中)
+    // back_to_center(); // 回到中心點
 
-    back_to_center();
+    // pickup_left(); // 取貨點(左)
 
-    pickup_left(); // 取貨點(左)
+    // back_to_center(); // 回到中心點
 
-    back_to_center();
+    // pickup_right(); // 取貨點(右)
 
-    pickup_right(); // 取貨點(右)
-
-    back_to_center();
+    // back_to_center(); // 回到中心點
 }
 
 /*################################函數定義區################################*/
@@ -82,12 +83,12 @@ void loop() // 程式循環
 void back_to_center()
 {
     back();
-    delay(500);
+    delay(450);
     stop();
     delay(100);
-    return_to_line();
+    return_to_line_left();
     delay(100);
-    return_to_line();
+    return_to_line_left();
     delay(100);
     pick_down_2();
     delay(100);
@@ -153,9 +154,9 @@ void pickup_middle()
     delay(500);
 
     /*################前往卸貨點################*/
-    return_to_line(); // 迴轉回到黑線上
-    trail_cross();    // 循跡到中間十字路口
-    trail_cross();    // 循跡到卸貨T字路口
+    return_to_line_left(); // 迴轉回到黑線上
+    trail_cross();         // 循跡到中間十字路口
+    trail_cross();         // 循跡到卸貨T字路口
     stop();
     /*################到達卸貨點################*/
     stop();
@@ -197,10 +198,11 @@ void pickup_left()
     delay(500);
 
     /*################前往卸貨點################*/
-    return_to_line();
+    return_to_line_left();
     trail_cross();
-    big_turn_right();
-    delay(300);
+    delay(100);
+
+    return_to_line_right();
     while (!(analogRead(IR[4]) > 450))
     {
         big_turn_right();
@@ -247,10 +249,11 @@ void pickup_right()
     pick_up();
     delay(500);
     /*################前往卸貨點################*/
-    return_to_line();
+    return_to_line_left();
     trail_cross();
-    big_turn_left();
-    delay(250);
+    delay(100);
+
+    return_to_line_right();
     while (!(analogRead(IR[0]) > 450))
     {
         big_turn_left();
@@ -281,11 +284,19 @@ void my_init()
     arm.attach(10);
 }
 
-void return_to_line()
+void return_to_line_left()
 {
     while (!(analogRead(IR[0]) > 450))
     {
-        re_turn();
+        re_turn_left();
+    }
+    stop();
+}
+void return_to_line_right()
+{
+    while (!(analogRead(IR[0]) > 450))
+    {
+        re_turn_right();
     }
     stop();
 }
@@ -293,7 +304,7 @@ void return_to_line_2()
 {
     while (!(analogRead(IR[1]) > 450))
     {
-        re_turn();
+        re_turn_left();
     }
     stop();
 }
@@ -400,9 +411,13 @@ void stop()
     motor(0, 0);
 }
 
-void re_turn()
+void re_turn_left()
 {
     motor(-140, 110);
+}
+void re_turn_right()
+{
+    motor(110, -140);
 }
 
 void motor(int speedL, int speedR)
