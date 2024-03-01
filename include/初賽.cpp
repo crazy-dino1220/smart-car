@@ -49,51 +49,33 @@ void setup() // 程式初始化
     trail_cross();
     arm_down();
 
-    forward();
-    delay(250);
-    stop();
-    big_turn_right();
-    delay(200);
-    return_to_line_right();
-    stop();
-    pick_down();
-    trail_cross();
-    pick_up();
-    /////////////////////////OK/////////////////////////
+    pickup_middle(); // 取貨點(中)
 
-    back();
-    delay(350);
-    stop();
-    return_to_line_left();
-    trail_cross();
-    forward();
-    delay(150);
-    stop();
-    return_to_line_right();
-    trail_cross();
-    forward();
-    delay(150);
-    stop();
-    return_to_line_left();
-    trail_cross();
-    duration_time_diff = millis();
-    while (!(millis() - duration_time_diff >= 1000))
-    {
-        trail();
-    }
-    stop();
-    big_turn_right();
-    delay(600);
-    stop();
-    forward();
-    delay(300);
-    stop();
-    claw.write(5);
+    back_to_center(); // 回到中心點
+
+    pickup_left(); // 取貨點(左)
+
+    back_to_center(); // 回到中心點
+
+    pickup_right(); // 取貨點(右)
+
+    back_to_center(); // 回到中心點
 }
 
 /*################################程式循環################################*/
 void loop() // 程式循環
 {
+    pickup_middle(); // 取貨點(中)
+
+    back_to_center(); // 回到中心點
+
+    pickup_left(); // 取貨點(左)
+
+    back_to_center(); // 回到中心點
+
+    pickup_right(); // 取貨點(右)
+
+    back_to_center(); // 回到中心點
 }
 
 /*################################函數定義區################################*/
@@ -286,7 +268,7 @@ void my_init()
 
 void return_to_line_left()
 {
-    while (!(analogRead(IR[1]) > 450))
+    while (!(analogRead(IR[0]) > 450))
     {
         re_turn_left();
     }
@@ -302,7 +284,7 @@ void return_to_line_right()
 }
 void return_to_line_2()
 {
-    while (!(analogRead(IR[0]) > 450))
+    while (!(analogRead(IR[1]) > 450))
     {
         re_turn_left();
     }
@@ -329,11 +311,11 @@ void trail()
     {
         if (analogRead(IR[1]) > 450)
         {
-            mid_turn_left();
+            small_turn_left();
         }
         else if (analogRead(IR[3]) > 450)
         {
-            mid_turn_right();
+            small_turn_right();
         }
         else if (analogRead(IR[1]) < 450 and analogRead(IR[3]) < 450)
 
@@ -345,11 +327,11 @@ void trail()
     {
         if (analogRead(IR[1]) > 450)
         {
-            big_turn_left();
+            mid_turn_left();
         }
         else if (analogRead(IR[3]) > 450)
         {
-            big_turn_right();
+            mid_turn_right();
         }
     }
 }
@@ -404,7 +386,7 @@ void big_turn_left()
 
 void big_turn_right()
 {
-    motor(90, -140);
+    motor(100, -150);
 }
 
 void stop()
