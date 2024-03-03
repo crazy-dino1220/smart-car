@@ -12,83 +12,88 @@ int sL = 4;
 int sR = 7;
 Servo claw; // 爪子伺服馬達
 Servo arm;  // 手臂伺服馬達
-unsigned long duration_time_diff;
 /*################################函數宣告區################################*/
+// 馬達控制
 void motor(int, int);
+// 循跡
 void trail();
+// 小轉彎_左
 void small_turn_left();
+// 小轉彎_右
 void small_turn_right();
+// 中轉彎_左
 void mid_turn_left();
+// 中轉彎_右
 void mid_turn_right();
+// 大轉彎_左
 void big_turn_left();
+// 大轉彎_右
 void big_turn_right();
+// 前進
 void forward();
+// 停止
 void stop();
+// 後退
 void back();
+// 回到線用_左
 void re_turn_left();
+// 回到線_左
 void return_to_line_left();
+// 回到線用_右
 void re_turn_right();
+// 回到線_右
 void return_to_line_right();
+// 回到線_2
 void return_to_line_2();
+// 循跡直到路口
 void trail_cross();
+// 判斷是否為路口
 bool cross();
+// 初始化
 void my_init();
-void pickup_middle();
-void pickup_left();
-void pickup_right();
+// 夾起
 void pick_up();
+// 放下
 void pick_down();
+// 放下_2
 void pick_down_2();
+// B_區放下
+void pick_down_B();
+//  手臂上升
 void arm_up();
+// 手臂下降
 void arm_down();
-void back_to_center();
+// 爪子打開
+void claw_open();
+// 爪子閉合
+void claw_close();
+// 循跡一段時間
+void trail_for_ms(unsigned long ms);
+// 搬運第一個貨物
+void pick_first();
+// 搬運第二個貨物
+void pick_second();
+// 搬運第三個貨物
+void pick_third();
+// 搬運第四個貨物
+void pick_fourth();
+// 循跡直到IR1~IR3都看到白色
+void forward_to_white();
+// 執行某個動作直到設定的某個IR先看到黑色再看到白色
+void action_until_black_to_white(int IR, void (*action)());
+// 執行某個動作直到IR1~IR3其中一個看到黑色
+void action_until_black(void (*action)());
+
+void trail_test();
 /*################################程式初始化################################*/
 void setup() // 程式初始化
 {
     my_init();
-    trail_cross();
-    arm_down();
-
-    forward();
-    delay(250);
-    stop();
-    big_turn_right();
-    delay(200);
-    return_to_line_right();
-    stop();
-    pick_down();
-    trail_cross();
     pick_up();
-    /////////////////////////OK/////////////////////////
-
-    back();
-    delay(350);
-    stop();
-    return_to_line_left();
-    trail_cross();
-    forward();
-    delay(150);
-    stop();
-    return_to_line_right();
-    trail_cross();
-    forward();
-    delay(150);
-    stop();
-    return_to_line_left();
-    trail_cross();
-    duration_time_diff = millis();
-    while (!(millis() - duration_time_diff >= 1000))
-    {
-        trail();
-    }
-    stop();
-    big_turn_right();
-    delay(600);
-    stop();
-    forward();
-    delay(300);
-    stop();
-    claw.write(5);
+    pick_first();
+    pick_second();
+    pick_third();
+    pick_fourth();
 }
 
 /*################################程式循環################################*/
@@ -98,18 +103,145 @@ void loop() // 程式循環
 
 /*################################函數定義區################################*/
 
-void back_to_center()
+void pick_first()
+{
+    trail_cross();
+    forward_to_white();
+    return_to_line_right();
+    pick_down();
+    trail_cross();
+    pick_up();
+    action_until_black_to_white(IR[0], back);
+    return_to_line_left();
+    trail_cross();
+    action_until_black_to_white(IR[4], forward);
+    action_until_black(re_turn_right);
+    trail_cross();
+    action_until_black_to_white(IR[0], forward);
+    action_until_black(re_turn_left);
+    trail_cross();
+    pick_down_B();
+}
+void pick_second()
 {
     back();
-    delay(425);
+    delay(200);
+    re_turn_right();
+    delay(100);
+    return_to_line_right();
+    trail_cross();
+    trail_cross();
+    action_until_black_to_white(IR[4], forward);
+    action_until_black(re_turn_right);
+    trail_cross();
+    forward_to_white();
+    return_to_line_right();
+    pick_down();
+    trail_cross();
+    pick_up();
+    action_until_black_to_white(IR[4], back);
+    return_to_line_right();
+    trail_cross();
+    action_until_black_to_white(IR[0], forward);
+    action_until_black(re_turn_left);
+    trail_cross();
+    pick_down_B();
+}
+void pick_third()
+{
+    back();
+    delay(200);
+    re_turn_right();
+    delay(100);
+    return_to_line_right();
+    trail_cross();
+    trail_cross();
+    forward_to_white();
+    return_to_line_left();
+    pick_down();
+    trail_cross();
+    pick_up();
+    action_until_black_to_white(IR[0], back);
+    return_to_line_left();
+    trail_cross();
+    pick_down_B();
+}
+void pick_fourth()
+{
+    back();
+    delay(200);
+    re_turn_right();
+    delay(100);
+    return_to_line_right();
+    trail_cross();
+    pick_down();
+    re_turn_right();
+    delay(300);
+    // action_until_black_to_white(IR[4], re_turn_right);
+    action_until_black(re_turn_right);
+    trail_cross();
+    pick_up();
+    action_until_black_to_white(IR[0], back);
+    return_to_line_left();
+    trail_cross();
+    action_until_black_to_white(IR[0], re_turn_left);
+    pick_down_B();
+}
+
+void pick_down_B()
+{
+    trail_for_ms(1000);
+    big_turn_right();
+    delay(450);
+    stop();
+    forward();
+    delay(300);
+    stop();
+    claw_open();
+    delay(500);
+}
+
+void action_until_black(void (*action)())
+{
+    while (!(analogRead(IR[1]) > 450 or analogRead(IR[2]) > 450 or analogRead(IR[3]) > 450))
+    {
+        action();
+    }
+    stop();
+}
+
+void action_until_black_to_white(int IR, void (*action)())
+{
+    while (!(analogRead(IR) > 450))
+    {
+        action();
+    }
+    while (!(analogRead(IR) < 450))
+    {
+        action();
+    }
     stop();
     delay(100);
-    return_to_line_left();
+}
+
+void forward_to_white()
+{
+    while (!(analogRead(IR[1]) < 450 and analogRead(IR[2]) < 450 and analogRead(IR[3]) < 450))
+    {
+        forward();
+    }
+    stop();
     delay(100);
-    return_to_line_left();
-    delay(100);
-    pick_down_2();
-    delay(100);
+}
+
+void trail_for_ms(unsigned long ms)
+{
+    unsigned long start_time = millis();
+    while (millis() - start_time < ms)
+    {
+        trail();
+    }
+    stop();
 }
 
 void arm_up()
@@ -127,9 +259,19 @@ void arm_down()
     }
 }
 
+void claw_open()
+{
+    claw.write(5);
+}
+
+void claw_close()
+{
+    claw.write(100);
+}
+
 void pick_up()
 {
-    claw.write(100); // 調整爪子角度
+    claw_close();
     delay(100);
     arm_up();
 }
@@ -138,7 +280,8 @@ void pick_down()
 {
     arm_down();
     delay(100);
-    claw.write(5); // 調整爪子角度
+    claw_open();
+    delay(100);
 }
 
 void pick_down_2()
@@ -146,126 +289,6 @@ void pick_down_2()
     arm.write(120);
     delay(100);
     claw.write(20); // 調整爪子角度
-}
-void pickup_middle()
-{
-    /*################前往第一個取貨點(中)################*/
-    pick_down_2();
-    delay(100);
-
-    // 繼續前進直到IR1~IR3全部小於450，到達取貨點
-    while (!(analogRead(IR[1]) < 450 and analogRead(IR[2]) < 450 and analogRead(IR[3]) < 450))
-    {
-        trail();
-        if (analogRead(IR[1]) < 450 and analogRead(IR[2]) < 450 and analogRead(IR[3]) < 450)
-        {
-            stop();
-            delay(100);
-        }
-    }
-    stop();
-
-    /*################到達第一個取貨點(中)################*/
-
-    pick_up();
-    arm_up();
-    delay(500);
-
-    /*################前往卸貨點################*/
-    return_to_line_left(); // 迴轉回到黑線上
-    trail_cross();         // 循跡到中間十字路口
-    trail_cross();         // 循跡到卸貨T字路口
-    /*################到達卸貨點################*/
-    pick_down();
-    arm_up();
-}
-
-void pickup_left()
-{
-    /*################前往第二個取貨點(左)################*/
-    pick_down_2();
-    delay(100);
-
-    return_to_line_left();
-    delay(100);
-
-    duration_time_diff = millis();
-    while (!(millis() - duration_time_diff >= 500))
-    {
-        trail();
-    }
-    stop();
-    while (!((analogRead(IR[1]) < 450) and (analogRead(IR[2]) < 450) and (analogRead(IR[3]) < 450)))
-    {
-        trail();
-        if (analogRead(IR[1]) < 450 and analogRead(IR[2]) < 450 and analogRead(IR[3]) < 450)
-        {
-            stop();
-            delay(100);
-        }
-    }
-    stop();
-    /*################到達第二個取貨點(左)################*/
-    pick_up();
-    delay(500);
-
-    /*################前往卸貨點################*/
-    return_to_line_left();
-    trail_cross();
-
-    return_to_line_right();
-    while (!(analogRead(IR[4]) > 450))
-    {
-        big_turn_right();
-    }
-    stop();
-    trail_cross(); // 循跡到卸貨T字路口
-    /*################到達卸貨點################*/
-    pick_down();
-    arm_up();
-}
-
-void pickup_right()
-{
-    pick_down_2();
-    delay(100);
-
-    return_to_line_right();
-    delay(100);
-
-    duration_time_diff = millis();
-    while (!(millis() - duration_time_diff >= 500))
-    {
-        trail();
-    }
-    stop();
-    while (!((analogRead(IR[1]) < 450) and (analogRead(IR[2]) < 450) and (analogRead(IR[3]) < 450)))
-    {
-        trail();
-        if (analogRead(IR[1]) < 450 and analogRead(IR[2]) < 450 and analogRead(IR[3]) < 450)
-        {
-            stop();
-            delay(100);
-        }
-    }
-    stop();
-    /*################到達第三個取貨點(右)################*/
-    pick_up();
-    delay(500);
-    /*################前往卸貨點################*/
-    return_to_line_left();
-    trail_cross();
-
-    return_to_line_left();
-    while (!(analogRead(IR[0]) > 450))
-    {
-        big_turn_left();
-    }
-    stop();
-    trail_cross(); // 循跡到卸貨T字路口
-    /*################到達卸貨點################*/
-    pick_down();
-    arm_up();
 }
 
 void my_init()
@@ -286,12 +309,13 @@ void my_init()
 
 void return_to_line_left()
 {
-    while (!(analogRead(IR[1]) > 450))
+    while (!(analogRead(IR[0]) > 450))
     {
         re_turn_left();
     }
     stop();
 }
+
 void return_to_line_right()
 {
     while (!(analogRead(IR[4]) > 450))
@@ -313,7 +337,8 @@ void trail_cross()
 {
     while (!cross())
     {
-        trail();
+        // trail();
+        trail_test();
     }
     while (!(analogRead(IR[1]) < 450 or analogRead(IR[2]) < 450 or analogRead(IR[3]) < 450))
     {
@@ -350,6 +375,41 @@ void trail()
         else if (analogRead(IR[3]) > 450)
         {
             big_turn_right();
+        }
+    }
+}
+void trail_test()
+{
+    if (analogRead(IR[2]) > 450)
+    {
+        if (analogRead(IR[1]) > 450)
+        {
+            // mid_turn_left();
+            motor(0, 190);
+        }
+        else if (analogRead(IR[3]) > 450)
+        {
+            // mid_turn_right();
+            motor(135, 0);
+        }
+        else if (analogRead(IR[1]) < 450 and analogRead(IR[3]) < 450)
+
+        {
+            // forward();
+            motor(130, 130);
+        }
+    }
+    else
+    {
+        if (analogRead(IR[1]) > 450)
+        {
+            // big_turn_left();
+            motor(-190, 130);
+        }
+        else if (analogRead(IR[3]) > 450)
+        {
+            // big_turn_right();
+            motor(105, -155);
         }
     }
 }
@@ -414,7 +474,7 @@ void stop()
 
 void re_turn_left()
 {
-    motor(-140, 100);
+    motor(-145, 100);
 }
 void re_turn_right()
 {
