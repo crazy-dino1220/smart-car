@@ -85,15 +85,20 @@ void action_until_black_to_white(int IR, void (*action)());
 void action_until_black(void (*action)());
 
 void trail_test();
+
+void pick_A();
 /*################################程式初始化################################*/
 void setup() // 程式初始化
 {
+
     my_init();
-    pick_up();
-    pick_first();
-    pick_second();
-    pick_third();
-    pick_fourth();
+    trail_cross();
+    pick_A();
+    // pick_up();
+    // pick_first();
+    // pick_second();
+    // pick_third();
+    // pick_fourth();
 }
 
 /*################################程式循環################################*/
@@ -102,7 +107,55 @@ void loop() // 程式循環
 }
 
 /*################################函數定義區################################*/
-
+void pick_A() // A=左邊泡棉
+{
+    return_to_line_left();
+    pick_down();
+    while (!((analogRead(IR[1]) < 450) and (analogRead(IR[2]) < 450) and (analogRead(IR[3]) < 450)))
+    {
+        trail();
+        if (analogRead(IR[1]) < 450 and analogRead(IR[2]) < 450 and analogRead(IR[3]) < 450)
+        {
+            stop();
+            delay(100);
+        }
+    }
+    pick_up();
+    return_to_line_right();
+    trail_cross();
+    return_to_line_right();
+    trail_cross();
+    pick_down();
+    back();
+    delay(400);
+    return_to_line_right();
+    trail_cross();
+    trail_for_ms(650);
+    pick_up();
+    trail_for_ms(550);
+    pick_down();
+    back();
+    delay(500);
+    return_to_line_right();
+    trail_cross();
+    return_to_line_left();
+    action_until_black(re_turn_left);
+    while (!((analogRead(IR[1]) < 450) and (analogRead(IR[2]) < 450) and (analogRead(IR[3]) < 450)))
+    {
+        trail();
+        if (analogRead(IR[1]) < 450 and analogRead(IR[2]) < 450 and analogRead(IR[3]) < 450)
+        {
+            stop();
+            delay(100);
+        }
+    }
+    pick_up();
+    return_to_line_right();
+    trail_cross();
+    return_to_line_right();
+    trail_for_ms(1500);
+    pick_down();
+}
 void pick_first()
 {
     trail_cross();
@@ -337,8 +390,8 @@ void trail_cross()
 {
     while (!cross())
     {
-        // trail();
-        trail_test();
+        trail();
+        // trail_test();
     }
     while (!(analogRead(IR[1]) < 450 or analogRead(IR[2]) < 450 or analogRead(IR[3]) < 450))
     {
