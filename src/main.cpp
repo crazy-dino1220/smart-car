@@ -97,18 +97,22 @@ void pick_C();
 int detectObject(unsigned long ms);
 // 略過白色的P
 void skip_white_P();
+
+void re_turn_right_test();
+
+void re_turn_left_test();
 /*################################程式初始化################################*/
 void setup() // 程式初始化
 {
 
     my_init();
-    trail_cross();
-    pick_C();
-    // pick_up();
-    // pick_first();
-    // pick_second();
-    // pick_third();
-    // pick_fourth();
+    // trail_cross();
+    // pick_C();
+    pick_up();
+    pick_first();
+    pick_second();
+    pick_third();
+    pick_fourth();
 }
 
 /*################################程式循環################################*/
@@ -441,13 +445,13 @@ void trail_for_ms(unsigned long ms)
 
 void arm_up()
 {
-    arm.write(75); // 調整手臂角度範例
+    arm.write(65); // 調整手臂角度範例
 }
 
 void arm_down()
 {
     // arm.write(120); // 調整手臂角度範例
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 5; i++)
     {
         arm.write(100 + 10 * i);
         delay(100);
@@ -508,6 +512,7 @@ void return_to_line_left()
     while (!(analogRead(IR[0]) > 450))
     {
         re_turn_left();
+        // re_turn_left_test();
     }
     stop();
 }
@@ -517,6 +522,7 @@ void return_to_line_right()
     while (!(analogRead(IR[4]) > 450))
     {
         re_turn_right();
+        // re_turn_right_test();
     }
     stop();
 }
@@ -581,18 +587,18 @@ void trail_test()
         if (analogRead(IR[1]) > 450)
         {
             // mid_turn_left();
-            motor(0, 190);
+            motor(0, 200);
         }
         else if (analogRead(IR[3]) > 450)
         {
             // mid_turn_right();
-            motor(135, 0);
+            motor(145, 0);
         }
         else if (analogRead(IR[1]) < 450 and analogRead(IR[3]) < 450)
 
         {
             // forward();
-            motor(130, 130);
+            motor(150, 150);
         }
     }
     else
@@ -600,12 +606,12 @@ void trail_test()
         if (analogRead(IR[1]) > 450)
         {
             // big_turn_left();
-            motor(-190, 130);
+            motor(-200, 140);
         }
         else if (analogRead(IR[3]) > 450)
         {
             // big_turn_right();
-            motor(105, -155);
+            motor(115, -165);
         }
     }
 }
@@ -675,6 +681,16 @@ void re_turn_left()
 void re_turn_right()
 {
     motor(110, -140);
+}
+
+void re_turn_left_test()
+{
+    motor(-155, 110);
+}
+
+void re_turn_right_test()
+{
+    motor(120, -150);
 }
 
 void motor(int speedL, int speedR)
