@@ -103,7 +103,7 @@ void setup() // 程式初始化
 
     my_init();
     trail_cross();
-    pick_B();
+    pick_C();
     // pick_up();
     // pick_first();
     // pick_second();
@@ -173,7 +173,8 @@ void pick_B()
     back();
     delay(1000);
     stop();
-    delay(1000);
+    big_turn_right();
+    delay(100);
     return_to_line_right();
     trail_cross();
     skip_white_P();
@@ -212,7 +213,6 @@ void pick_B()
     back();
     delay(850);
     stop();
-    delay(1000);
     return_to_line_right();
     delay(100);
     while (!((analogRead(IR[1]) < 450) and (analogRead(IR[2]) < 450) and (analogRead(IR[3]) < 450)))
@@ -447,7 +447,7 @@ void arm_up()
 void arm_down()
 {
     // arm.write(120); // 調整手臂角度範例
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 4; i++)
     {
         arm.write(100 + 10 * i);
         delay(100);
