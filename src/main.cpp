@@ -109,10 +109,10 @@ void setup() // 程式初始化
     // trail_cross();
     // pick_C();
     pick_up();
-    pick_first();
-    pick_second();
-    pick_third();
-    pick_fourth();
+    // pick_first();
+    // pick_second();
+    // pick_third();
+    // pick_fourth();
 }
 
 /*################################程式循環################################*/
