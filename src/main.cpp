@@ -11,9 +11,9 @@ int mR = 6;
 // 方向控制:左邊馬達為4，右邊馬達為7
 int sL = 4;
 int sR = 7;
-Servo claw; // 爪子伺服馬達
-Servo arm;  // 手臂伺服馬達
-// Pixetto pxtSerial(5, 6); // 鏡頭辨識 RX, TX = { 5, 6 }
+Servo claw;              // 爪子伺服馬達
+Servo arm;               // 手臂伺服馬達
+Pixetto pxtSerial(2, 3); // 鏡頭辨識 RX(黃), TX(白) = { 2, 3 }
 /*################################函數宣告區################################*/
 // 馬達控制
 void motor(int, int);
@@ -97,21 +97,51 @@ void pick_C();
 int detectObject(unsigned long ms);
 // 略過白色的P
 void skip_white_P();
-
 void re_turn_right_test();
-
 void re_turn_left_test();
+// 左修正
+void left_fix();
+// 右修正
+void right_fix();
+// 紅外線測試
+void IR_test();
+void A_B_test();
 /*################################程式初始化################################*/
 void setup() // 程式初始化
 {
 
     my_init();
+    arm.write(100);
+    // // Serial.begin(9600);
+
     // trail_cross();
-    // pick_C();
-    pick_up();
-    // pick_first();
-    // pick_second();
-    // pick_third();
+    // re_turn_left();
+    // delay(300);
+    // return_to_line_left();
+    // delay(500);
+    // if (detectObject(1000) == 0)
+    // {
+    //     pick_A(); // 左邊是目標物
+    // }
+    // else
+    // {
+    //     re_turn_right();
+    //     delay(300);
+    //     return_to_line_right();
+    //     delay(500);
+    //     if (detectObject(1000) == 0)
+    //     {
+    //         pick_B(); // 中間是目標物
+    //     }
+    //     else
+    //     {
+    //         pick_C(); // 右邊是目標物
+    //     }
+    // }
+
+    pick_first();
+    pick_second();
+    pick_third();
     // pick_fourth();
 }
 
@@ -123,6 +153,7 @@ void loop() // 程式循環
 /*################################函數定義區################################*/
 void pick_A() // A=左邊泡棉
 {
+    return_to_line_right();
     return_to_line_right();
     pick_down();
     while (!((analogRead(IR[1]) < 450) and (analogRead(IR[2]) < 450) and (analogRead(IR[3]) < 450)))
@@ -138,7 +169,7 @@ void pick_A() // A=左邊泡棉
     return_to_line_right();
     trail_cross();
     return_to_line_right();
-    trail_for_ms(1800);
+    trail_for_ms(1500);
     claw_open();
     back();
     delay(500);
@@ -169,17 +200,18 @@ void pick_A() // A=左邊泡棉
     pick_down_B();
 }
 
-void pick_B()
+void pick_B() // B=中間泡棉
 {
     pick_down();
-    trail_for_ms(750);
-    pick_up();
+    trail_for_ms(900);
+    pick_up(); // 夾中間泡棉
     back();
     delay(1000);
     stop();
     big_turn_right();
     delay(100);
     return_to_line_right();
+    left_fix();
     trail_cross();
     skip_white_P();
     stop();
@@ -187,16 +219,19 @@ void pick_B()
     trail_cross();
     return_to_line_left();
     pick_down_B();
-    back();
-    delay(200);
+    back(); // 卸貨完倒退
+    delay(300);
     re_turn_right();
     delay(100);
     return_to_line_right();
+    left_fix();
     trail_cross();
     return_to_line_right();
     trail_cross();
     trail_cross();
     skip_white_P();
+    re_turn_left();
+    delay(300);
     return_to_line_left();
     pick_down();
     while (!((analogRead(IR[1]) < 450) and (analogRead(IR[2]) < 450) and (analogRead(IR[3]) < 450)))
@@ -212,13 +247,16 @@ void pick_B()
     return_to_line_right();
     trail_cross();
     return_to_line_left();
-    trail_for_ms(1500);
+    left_fix();
+    trail_for_ms(1200);
     pick_down();
-    back();
-    delay(850);
+    back(); // 直接退到十字路口
+    delay(500);
     stop();
     return_to_line_right();
-    delay(100);
+    left_fix();
+    trail_cross();
+    return_to_line_left();
     while (!((analogRead(IR[1]) < 450) and (analogRead(IR[2]) < 450) and (analogRead(IR[3]) < 450)))
     {
         trail();
@@ -230,15 +268,17 @@ void pick_B()
     }
     stop();
     pick_up();
-    back();
+    back(); // 直接退到十字路口
     delay(600);
     stop();
     return_to_line_left();
-    trail_for_ms(1800);
+    trail_for_ms(1200);
     claw_open();
 }
-void pick_C()
+void pick_C() // C=右邊泡棉
 {
+    re_turn_left();
+    delay(300);
     return_to_line_left();
     pick_down();
     while (!((analogRead(IR[1]) < 450) and (analogRead(IR[2]) < 450) and (analogRead(IR[3]) < 450)))
@@ -250,17 +290,27 @@ void pick_C()
             delay(100);
         }
     }
+    stop();
     pick_up();
     return_to_line_right();
     trail_cross();
+    forward();
+    delay(100);
+    stop();
+    re_turn_left();
+    delay(200);
+    stop();
     return_to_line_left();
-    trail_for_ms(1800);
-    pick_down();
+    trail_for_ms(1200);
+    claw_open();
     back();
     delay(500);
     return_to_line_right();
     trail_cross();
     // /*###左邊結束回到路口面相白色的P###*/
+    re_turn_left();
+    delay(200);
+    stop();
     return_to_line_left();
     pick_down();
     while (!((analogRead(IR[1]) < 450) and (analogRead(IR[2]) < 450) and (analogRead(IR[3]) < 450)))
@@ -293,16 +343,41 @@ void pick_C()
     return_to_line_left();
     pick_down_B();
 }
+
+void left_fix()
+{
+    while (!((analogRead(IR[1]) > 450) or (analogRead(IR[2]) > 450) or (analogRead(IR[3]) > 450)))
+    {
+        re_turn_left();
+    }
+    stop();
+    delay(300);
+}
+
+void right_fix()
+{
+    while (!((analogRead(IR[1]) > 450) or (analogRead(IR[2]) > 450) or (analogRead(IR[3]) > 450)))
+    {
+        re_turn_right();
+    }
+    stop();
+    delay(300);
+}
+
 void pick_first()
 {
     trail_cross();
-    forward_to_white();
+    // forward_to_white();
+    forward();
+    delay(100);
+    stop();
     return_to_line_right();
     pick_down();
     trail_cross();
     pick_up();
     action_until_black_to_white(IR[0], back);
     return_to_line_left();
+    right_fix();
     trail_cross();
     action_until_black_to_white(IR[4], forward);
     action_until_black(re_turn_right);
@@ -315,22 +390,33 @@ void pick_first()
 void pick_second()
 {
     back();
-    delay(200);
+    delay(300);
+    stop();
+    delay(500);
     re_turn_right();
     delay(100);
+    stop();
+    delay(500);
     return_to_line_right();
+    right_fix();
+    // left_fix();
     trail_cross();
     trail_cross();
     action_until_black_to_white(IR[4], forward);
     action_until_black(re_turn_right);
     trail_cross();
-    forward_to_white();
+    // forward_to_white();
+    forward();
+    delay(100);
+    stop();
     return_to_line_right();
+    left_fix();
     pick_down();
     trail_cross();
     pick_up();
     action_until_black_to_white(IR[4], back);
     return_to_line_right();
+    left_fix();
     trail_cross();
     action_until_black_to_white(IR[0], forward);
     action_until_black(re_turn_left);
@@ -340,19 +426,27 @@ void pick_second()
 void pick_third()
 {
     back();
-    delay(200);
+    delay(300);
+    stop();
+    delay(500);
     re_turn_right();
     delay(100);
+    stop();
+    delay(500);
     return_to_line_right();
+    right_fix();
+    // left_fix();
     trail_cross();
     trail_cross();
     forward_to_white();
     return_to_line_left();
+    right_fix();
     pick_down();
     trail_cross();
     pick_up();
     action_until_black_to_white(IR[0], back);
     return_to_line_left();
+    right_fix();
     trail_cross();
     pick_down_B();
 }
@@ -380,9 +474,9 @@ void pick_fourth()
 
 void pick_down_B()
 {
-    trail_for_ms(1000);
+    trail_for_ms(950);
     big_turn_right();
-    delay(450);
+    delay(400);
     stop();
     forward();
     delay(300);
@@ -390,13 +484,16 @@ void pick_down_B()
     claw_open();
     delay(500);
 }
+void A_B_test()
+{
+}
 
 void skip_white_P()
 {
     forward();
     delay(600);
     stop();
-    delay(1000);
+    delay(500);
     trail_cross();
 }
 
@@ -504,7 +601,7 @@ void my_init()
 
     claw.attach(9);
     arm.attach(10);
-    // pxtSerial.begin(); // 初始化Pixetto
+    pxtSerial.begin(); // 初始化Pixetto
 }
 
 void return_to_line_left()
@@ -515,6 +612,7 @@ void return_to_line_left()
         // re_turn_left_test();
     }
     stop();
+    delay(300);
 }
 
 void return_to_line_right()
@@ -525,6 +623,7 @@ void return_to_line_right()
         // re_turn_right_test();
     }
     stop();
+    delay(300);
 }
 void return_to_line_2()
 {
@@ -547,7 +646,7 @@ void trail_cross()
         forward();
     }
     stop();
-    delay(100);
+    delay(250);
 }
 
 void trail()
@@ -703,41 +802,61 @@ void motor(int speedL, int speedR)
     analogWrite(mR, abs(speedR)); // 右邊馬達速度設定
 }
 
-// #define MAX_OBJECTS 3 // 物件 ID 的範圍為 0 到 2
+#define MAX_OBJECTS 3 // 物件 ID 的範圍為 0 到 2
 
-// int detectObject(unsigned long ms)
-// {
-//     // 初始化物件偵測次數的 array
-//     int objectCounts[MAX_OBJECTS] = {0};
+int detectObject(unsigned long ms)
+{
+    // 初始化物件偵測次數的 array
+    int objectCounts[MAX_OBJECTS] = {0};
 
-//     unsigned long start_time = millis();
-//     while (millis() - start_time < ms)
-//     {
-//         if (pxtSerial.isDetected())
-//         {
-//             // 增加對應物件的偵測次數
-//             int objectID = pxtSerial.getTypeID();
-//             if (objectID >= 0 && objectID < MAX_OBJECTS)
-//             {
-//                 objectCounts[objectID]++;
-//             }
-//         }
-//     }
+    while (pxtSerial.isDetected() == false)
+    {
+        /* code */
+    }
 
-//     // 找出偵測次數最多的物件
-//     int maxCount = 0;
-//     int maxObjectID = -1;
-//     for (int i = 0; i < MAX_OBJECTS; i++)
-//     {
-//         if (objectCounts[i] > maxCount)
-//         {
-//             maxCount = objectCounts[i];
-//             maxObjectID = i;
-//         }
-//         // Serial.print(objectCounts[i]);
-//         // Serial.print(" ");
-//     }
+    unsigned long start_time = millis();
+    while (millis() - start_time < ms)
+    {
+        if (pxtSerial.isDetected())
+        {
+            // 增加對應物件的偵測次數
+            int objectID = pxtSerial.getTypeID();
+            if (objectID >= 0 && objectID < MAX_OBJECTS)
+            {
+                objectCounts[objectID]++;
+            }
+        }
+    }
 
-//     // 回傳偵測次數最多的物件的 ID
-//     return maxObjectID;
-// }
+    // 找出偵測次數最多的物件
+    int maxCount = 0;
+    int maxObjectID = -1;
+    for (int i = 0; i < MAX_OBJECTS; i++)
+    {
+        if (objectCounts[i] > maxCount)
+        {
+            maxCount = objectCounts[i];
+            maxObjectID = i;
+        }
+        // Serial.print(objectCounts[i]);
+        // Serial.print(" ");
+    }
+    // 如果沒有偵測到物件遞迴呼叫
+    if (maxObjectID == -1)
+    {
+        return detectObject(ms);
+    }
+
+    // 回傳偵測次數最多的物件的 ID
+    return maxObjectID;
+}
+
+void IR_test()
+{
+    for (int i = 0; i < 5; i++)
+    {
+        Serial.print(analogRead(IR[i]));
+        Serial.print(" ");
+    }
+    Serial.println();
+}
